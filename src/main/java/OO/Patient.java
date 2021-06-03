@@ -70,12 +70,6 @@ public class Patient {
 
     @Override
     public String toString() {
-        return "Produit{" +
-                "code=" + code +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", adresse='" + adresse + '\'' +
-                ", tel='" + tel + '\'' +
-                '}';
+       return code +" : " +nom +" "+ prenom ;
     }
 }
