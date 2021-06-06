@@ -25,14 +25,11 @@ public class PatientFrame extends JFrame {
     private final JTextField txt_tel;
     private final DefaultListModel<Patient> list_model;
 
-    public PatientFrame()
-    {
+    public PatientFrame() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(900, 600);
         this.setTitle("Cabinet chams");
         this.setLayout(null);
-
-
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
@@ -97,22 +94,20 @@ public class PatientFrame extends JFrame {
         ajout=new JButton("Ajouter Consultation");
         ajout.setSize(290, 50);
         ajout.setLocation(10, 500);
+        ajout.addActionListener((actionEvent) -> {
+            if(list_patients.getSelectedValue() != null){
+                new ConsultationFrame((Patient) list_patients.getSelectedValue());
+            }else {
+                JOptionPane.showMessageDialog(this, "Selectionner un patient !!","Ajout d'un Consultation",JOptionPane.ERROR_MESSAGE);
+
+            }
+
+        });
 
 
         btn_search=new JButton("Chercher par code");
         btn_search.addActionListener(actionEvent -> {
-            try{
-                int codePatient = Integer.parseInt(search.getText());
-                var patient = patientDAO.RechercherParId(codePatient);
-                modifierFormulaire(patient.getNom(), patient.getPrenom(), patient.getAdresse(), patient.getTel());
-                search.setText("");
-            }catch (NumberFormatException ex){
-                JOptionPane.showMessageDialog(this, "veuillez saisir un code valide !","recherche de patient",JOptionPane.ERROR_MESSAGE);
-            }
-            catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "il n'y a pas un patient avec ce code","recherche de patient",JOptionPane.ERROR_MESSAGE);
-            }
-
+            chercherPatientParCode();
         });
         btn_search.setSize(200, 30);
         btn_search.setLocation(100, 30);
@@ -209,6 +204,34 @@ public class PatientFrame extends JFrame {
 
         this.setVisible(true);
     }
+
+    private void chercherPatientParCode() {
+        try{
+            int codePatient = Integer.parseInt(search.getText());
+            int i =0;
+            while(i<list_model.getSize()){
+                var patient = list_model.getElementAt(i);
+                if( patient.getCode() == codePatient ) {
+                    list_patients.setSelectedIndex(i);
+                    break;
+                }
+                i++;
+            }
+
+            if (i==list_model.getSize()){
+                    throw new Exception();
+            }
+        }catch (NumberFormatException ex){
+            JOptionPane.showMessageDialog(this, "veuillez saisir un code valide !","recherche de patient",JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "il n'y a pas un patient avec ce code","recherche de patient",JOptionPane.ERROR_MESSAGE);
+            modifierFormulaire("","","","");
+        }finally {
+            search.setText("");
+        }
+    }
+
     private  void modifierPatient(){
         if(txt_nom.getText().length() > 0 && txt_prenom.getText().length() > 0 && txt_adress.getText().length() > 0 && txt_tel.getText().length()>0){
             try{
@@ -224,6 +247,7 @@ public class PatientFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "touts les champs doivent etre remplis","ajout de patient",JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void ajouterPatient() {
         if(txt_nom.getText().length() > 0 && txt_prenom.getText().length() > 0 && txt_adress.getText().length() > 0 && txt_tel.getText().length()>0){
             try{
